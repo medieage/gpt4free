@@ -12,3 +12,9 @@ services:
       G4F_CORS_ALLOW_METHODS: "GET, POST, OPTIONS"
       G4F_CORS_ALLOW_HEADERS: "Content-Type, Authorization"
     restart: unless-stopped
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.gpt4free.rule: "Host(`gpt.mathlog.ru`)"
+      traefik.http.routers.gpt4free.entrypoints: "websecure"
+      traefik.http.routers.gpt4free.tls: "true"
+      traefik.http.services.gpt4free.loadbalancer.server.port: "8080"
