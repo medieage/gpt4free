@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 
 services:
   gpt4free:
@@ -9,9 +9,17 @@ services:
       dockerfile: docker/Dockerfile
     volumes:
       - .:/app
-    ports:
-      - '9090:8080'
-      - '1337:8080'
-      - '7900:7900'
     environment:
       - OLLAMA_HOST=host.docker.internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gpt4free.rule=Host(`gpt.mathlog.ru`)"
+      - "traefik.http.routers.gpt4free.entrypoints=websecure"
+      - "traefik.http.routers.gpt4free.tls=true"
+      - "traefik.http.services.gpt4free.loadbalancer.server.port=8080"
+    networks:
+      - web
+
+networks:
+  web:
+    external: true
