@@ -4,13 +4,9 @@ services:
   gpt4free:
     image: hlohaus789/g4f:latest
     shm_size: 2gb
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
     volumes:
-      - .:/app
+      - ./app:/app
     ports:
-      - '9090:8080'
       - '1337:8080'
       - '7900:7900'
     environment:
@@ -18,3 +14,8 @@ services:
       - G4F_CORS_ALLOW_ORIGINS=*
       - G4F_CORS_ALLOW_METHODS=GET, POST, OPTIONS
       - G4F_CORS_ALLOW_HEADERS=Content-Type, Authorization
+      - SSL_CERT_FILE=/etc/letsencrypt/live/gpt.mathlog.ru/fullchain.pem
+      - SSL_KEY_FILE=/etc/letsencrypt/live/gpt.mathlog.ru/privkey.pem
+    restart: unless-stopped
+    labels:
+      coolify.managed: 'true'
