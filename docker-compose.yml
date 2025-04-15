@@ -15,3 +15,6 @@ services:
       - '7900:7900'
     environment:
       - OLLAMA_HOST=host.docker.internal
+      - G4F_CORS_ALLOW_ORIGINS=*
+      - G4F_CORS_ALLOW_METHODS=GET, POST, OPTIONS
+      - G4F_CORS_ALLOW_HEADERS=Content-Type, Authorization
