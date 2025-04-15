@@ -18,4 +18,9 @@ services:
       - SSL_KEY_FILE=/etc/letsencrypt/live/gpt.mathlog.ru/privkey.pem
     restart: unless-stopped
     labels:
-      coolify.managed: 'true'
+      coolify.managed: "true"
+      traefik.enable: "true"
+      traefik.http.routers.gpt4free.rule: "Host(`gpt.mathlog.ru`)"
+      traefik.http.routers.gpt4free.entrypoints: "websecure"
+      traefik.http.routers.gpt4free.tls: "true"
+      traefik.http.services.gpt4free.loadbalancer.server.port: "8080"
