@@ -4,23 +4,11 @@ services:
   gpt4free:
     image: hlohaus789/g4f:latest
     shm_size: 2gb
-    volumes:
-      - ./app:/app
     ports:
-      - '1337:8080'
-      - '7900:7900'
+      - "1337:8080"
     environment:
-      - OLLAMA_HOST=host.docker.internal
-      - G4F_CORS_ALLOW_ORIGINS=*
-      - G4F_CORS_ALLOW_METHODS=GET, POST, OPTIONS
-      - G4F_CORS_ALLOW_HEADERS=Content-Type, Authorization
-      - SSL_CERT_FILE=/etc/letsencrypt/live/gpt.mathlog.ru/fullchain.pem
-      - SSL_KEY_FILE=/etc/letsencrypt/live/gpt.mathlog.ru/privkey.pem
+      OLLAMA_HOST: "host.docker.internal"
+      G4F_CORS_ALLOW_ORIGINS: "*"
+      G4F_CORS_ALLOW_METHODS: "GET, POST, OPTIONS"
+      G4F_CORS_ALLOW_HEADERS: "Content-Type, Authorization"
     restart: unless-stopped
-    labels:
-      coolify.managed: "true"
-      traefik.enable: "true"
-      traefik.http.routers.gpt4free.rule: "Host(`gpt.mathlog.ru`)"
-      traefik.http.routers.gpt4free.entrypoints: "websecure"
-      traefik.http.routers.gpt4free.tls: "true"
-      traefik.http.services.gpt4free.loadbalancer.server.port: "8080"
