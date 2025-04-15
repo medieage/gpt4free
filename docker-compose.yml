@@ -4,11 +4,6 @@ services:
   gpt4free:
     image: hlohaus789/g4f:latest
     shm_size: 2gb
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    volumes:
-      - .:/app
     environment:
       - OLLAMA_HOST=host.docker.internal
     labels:
@@ -22,4 +17,4 @@ services:
 
 networks:
   web:
-    name: web
+    external: true
