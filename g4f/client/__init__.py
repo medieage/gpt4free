@@ -15,12 +15,13 @@ from ..providers.response import *
 from ..errors import NoMediaResponseError
 from ..providers.retry_provider import IterListProvider
 from ..providers.asyncio import to_sync_generator
+from ..providers.any_provider import AnyProvider
 from ..Provider.needs_auth import BingCreateImages, OpenaiAccount
 from ..tools.run_tools import async_iter_run_tools, iter_run_tools
 from .stubs import ChatCompletion, ChatCompletionChunk, Image, ImagesResponse, UsageModel, ToolCallModel
 from .models import ClientModels
 from .types import IterResponse, ImageProvider, Client as BaseClient
-from .service import get_model_and_provider, convert_to_provider
+from .service import convert_to_provider
 from .helper import find_stop, filter_json, filter_none, safe_aclose
 from .. import debug
 
@@ -217,7 +218,7 @@ async def async_iter_response(
 
         if stream:
             chat_completion = ChatCompletionChunk.model_construct(
-                None, finish_reason, completion_id, int(time.time()), usage=usage
+                None, finish_reason, completion_id, int(time.time()), usage=usage, conversation=conversation
             )
         else:
             if response_format is not None and "type" in response_format:
@@ -228,7 +229,7 @@ async def async_iter_response(
                 **filter_none(
                     tool_calls=[ToolCallModel.model_construct(**tool_call) for tool_call in tool_calls]
                 ) if tool_calls is not None else {},
-                conversation=None if conversation is None else conversation.get_dict()
+                conversation=conversation
             )
         if provider is not None:
             chat_completion.provider = provider.name
@@ -299,14 +300,12 @@ class Completions:
             kwargs["media"] = [(image, image_name)]
         elif "images" in kwargs:
             kwargs["media"] = kwargs.pop("images")
-        model, provider = get_model_and_provider(
-            model,
-            self.provider if provider is None else provider,
-            stream,
-            ignore_working,
-            ignore_stream,
-            has_images="media" in kwargs
-        )
+        if provider is None:
+            provider = self.provider
+            if provider is None:
+                provider = AnyProvider
+        if isinstance(provider, str):
+            provider = convert_to_provider(provider)
         stop = [stop] if isinstance(stop, str) else stop
         if ignore_stream:
             kwargs["ignore_stream"] = True
@@ -600,14 +599,12 @@ class AsyncCompletions:
             kwargs["media"] = [(image, image_name)]
         elif "images" in kwargs:
             kwargs["media"] = kwargs.pop("images")
-        model, provider = get_model_and_provider(
-            model,
-            self.provider if provider is None else provider,
-            stream,
-            ignore_working,
-            ignore_stream,
-            has_images="media" in kwargs,
-        )
+        if provider is None:
+            provider = self.provider
+            if provider is None:
+                provider = AnyProvider
+        if isinstance(provider, str):
+            provider = convert_to_provider(provider)
         stop = [stop] if isinstance(stop, str) else stop
         if ignore_stream:
             kwargs["ignore_stream"] = True

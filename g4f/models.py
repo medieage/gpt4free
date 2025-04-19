@@ -18,7 +18,6 @@ from .Provider import (
     Free2GPT,
     FreeGpt,
     HuggingSpace,
-    G4F,
     Grok,
     DeepseekAI_JanusPro7b,
     Glider,
@@ -183,12 +182,12 @@ o1_mini = Model(
 o3_mini = Model(
     name          = 'o3-mini',
     base_provider = 'OpenAI',
-    best_provider = IterListProvider([DDG, Blackbox, PollinationsAI, Liaobots])
+    best_provider = IterListProvider([DDG, Blackbox, Liaobots])
 )
 
 ### GigaChat ###
 gigachat = Model(
-    name          = 'GigaChat:latest',
+    name          = 'gigachat',
     base_provider = 'gigachat',
     best_provider = GigaChat
 )
@@ -200,13 +199,13 @@ meta = Model(
     best_provider = MetaAI
 )
 
-# llama 2
+### llama 2-4 ###
 llama_2_7b = Model(
     name          = "llama-2-7b",
     base_provider = "Meta Llama",
     best_provider = Cloudflare
 )
-# llama 3
+
 llama_3_8b = Model(
     name          = "llama-3-8b",
     base_provider = "Meta Llama",
@@ -219,7 +218,6 @@ llama_3_70b = Model(
     best_provider = Jmuz
 )
 
-# llama 3.1
 llama_3_1_8b = Model(
     name          = "llama-3.1-8b",
     base_provider = "Meta Llama",
@@ -237,8 +235,6 @@ llama_3_1_405b = Model(
     base_provider = "Meta Llama",
     best_provider = IterListProvider([AllenAI, Jmuz])
 )
-
-# llama 3.2
 
 llama_3_2_1b = Model(
     name          = "llama-3.2-1b",
@@ -264,11 +260,16 @@ llama_3_2_90b = Model(
     best_provider = IterListProvider([DeepInfraChat, Jmuz])
 )
 
-# llama 3.3
 llama_3_3_70b = Model(
     name          = "llama-3.3-70b",
     base_provider = "Meta Llama",
     best_provider = IterListProvider([Blackbox, DDG, DeepInfraChat, LambdaChat, PollinationsAI, Jmuz, HuggingChat, HuggingFace])
+)
+
+llama_4_scout = Model(
+    name          = "llama-4-scout",
+    base_provider = "Meta Llama",
+    best_provider = IterListProvider([Cloudflare, PollinationsAI])
 )
 
 ### Mistral ###
@@ -496,7 +497,7 @@ qwen_2_5_max = Model(
 qwq_32b = Model(
     name = 'qwq-32b',
     base_provider = 'Qwen',
-    best_provider = IterListProvider([Blackbox, PollinationsAI, Jmuz, HuggingChat])
+    best_provider = IterListProvider([Blackbox, Jmuz, HuggingChat])
 )
 qvq_72b = VisionModel(
     name = 'qvq-72b',
@@ -533,7 +534,7 @@ deepseek_r1 = Model(
 janus_pro_7b = VisionModel(
     name = DeepseekAI_JanusPro7b.default_model,
     base_provider = 'DeepSeek',
-    best_provider = IterListProvider([DeepseekAI_JanusPro7b, G4F])
+    best_provider = IterListProvider([DeepseekAI_JanusPro7b])
 )
 
 ### x.ai ###
@@ -818,6 +819,9 @@ class ModelUtils:
         
         # llama-3.3
         llama_3_3_70b.name: llama_3_3_70b,
+
+        # llama-4
+        llama_4_scout.name: llama_4_scout,
                 
         ### Mistral ###
         mixtral_8x7b.name: mixtral_8x7b,
@@ -980,7 +984,7 @@ demo_models = {
     llama_3_2_11b.name: [llama_3_2_11b, [HuggingChat]],
     qwen_2_vl_7b.name: [qwen_2_vl_7b, [HuggingFaceAPI]],
     deepseek_r1.name: [deepseek_r1, [HuggingFace, PollinationsAI]],
-    janus_pro_7b.name: [janus_pro_7b, [HuggingSpace, G4F]],
+    janus_pro_7b.name: [janus_pro_7b, [HuggingSpace]],
     command_r.name: [command_r, [HuggingSpace]],
     command_r_plus.name: [command_r_plus, [HuggingSpace]],
     command_r7b.name: [command_r7b, [HuggingSpace]],
@@ -1002,6 +1006,6 @@ __models__  = {
                 if model.best_provider is not None and model.best_provider.working
                 else [])
         for model in ModelUtils.convert.values()]
-        if providers
+        if [p for p in providers if p.working]
     }
 _all_models = list(__models__.keys())
